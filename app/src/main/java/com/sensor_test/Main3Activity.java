@@ -30,10 +30,12 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class Main3Activity extends AppCompatActivity implements View.OnClickListener, OnChartValueSelectedListener {
     private static final String TAG = Main3Activity.class.getSimpleName();
-    private LineChart chart;
+    private LineChart chart, chart2;
     private MyService mBluetoothLeService;
     private String name, address;
     private Button connectButton, newvalue;
@@ -43,12 +45,15 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
     private boolean mOpen = false;
     private StringBuffer buffer = new StringBuffer();
     private TextView notify;
-    private LineDataSet x, y, z;
+    private LineDataSet x, y, z, a, b, c;
     BluetoothGattCharacteristic characteristic;
     boolean plotData = false;
     ArrayList<Entry> values3;
     ArrayList<Entry> values1;
     ArrayList<Entry> values2;
+    ArrayList<Entry> values4;
+    ArrayList<Entry> values5;
+    ArrayList<Entry> values6;
     LineData data;
     int counter = 0;
     // Code to manage Service lifecycle.
@@ -84,6 +89,9 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
         values3 = new ArrayList<>();
         values1 = new ArrayList<>();
         values2 = new ArrayList<>();
+        values4 = new ArrayList<>();
+        values5 = new ArrayList<>();
+        values6 = new ArrayList<>();
         name = getIntent().getStringExtra("name");
         address = getIntent().getStringExtra("address");
         Log.e(TAG, "address:" + address);
@@ -103,11 +111,19 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
         chart = findViewById(R.id.chart1);
+        chart2 = findViewById(R.id.chart2);
         setGraph();
+        setGraph2();
         newvalue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addEntry(((float) (Math.random() * 40) + 30f), ((float) (Math.random() * 10) + 20f), ((float) (Math.random() * -2) + 10f));
+                String s = random24numbers();
+                notify.setText(s);
+                String[] f = splitToNChar(s, 2);
+                addEntry((float) Float.valueOf(f[0]), (float) Float.valueOf(f[1]), (float) Float.valueOf(f[2]), (float) Float.valueOf(f[3]), (float) Float.valueOf(f[4]), (float) Float.valueOf(f[5]));
+                addEntry2((float) Float.valueOf(f[6]), (float) Float.valueOf(f[7]), (float) Float.valueOf(f[8]), (float) Float.valueOf(f[9]), (float) Float.valueOf(f[10]), (float) Float.valueOf(f[11]));
+
+
             }
         });
         /* feedMultiple();*/
@@ -269,6 +285,55 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void setGraph2() {
+        chart2.setOnChartValueSelectedListener(Main3Activity.this);
+
+        // enable description text
+        chart2.getDescription().setEnabled(true);
+
+        // enable touch gestures
+        chart2.setTouchEnabled(true);
+
+        // enable scaling and dragging
+        chart2.setDragEnabled(true);
+        chart2.setScaleEnabled(true);
+        chart2.setDrawGridBackground(false);
+
+        // if disabled, scaling can be done on x- and y-axis separately
+        chart2.setPinchZoom(true);
+
+        // set an alternative background color
+        chart2.setBackgroundColor(Color.LTGRAY);
+
+        LineData data = new LineData();
+        data.setValueTextColor(Color.WHITE);
+
+        // add empty data
+        chart2.setData(data);
+
+        // get the legend (only possible after setting data)
+        Legend l = chart2.getLegend();
+
+        // modify the legend ...
+        l.setForm(Legend.LegendForm.LINE);
+
+        l.setTextColor(Color.WHITE);
+
+        XAxis xl = chart2.getXAxis();
+        xl.setTextColor(Color.WHITE);
+        xl.setDrawGridLines(false);
+        xl.setAvoidFirstLastClipping(true);
+        xl.setEnabled(true);
+
+        YAxis leftAxis = chart2.getAxisLeft();
+        leftAxis.setTextColor(Color.WHITE);
+        leftAxis.setAxisMaximum(100f);
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setDrawGridLines(true);
+        YAxis rightAxis = chart2.getAxisRight();
+        rightAxis.setEnabled(false);
+
+    }
 
     @Override
     public void onValueSelected(Entry e, Highlight h) {
@@ -280,10 +345,14 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void addEntry(float xValue, float yValue, float zValue) {
+    private void addEntry(float xValue, float yValue, float zValue, float aValue, float bValue, float cValue) {
+
         values1.add(new Entry(chart.getData().getEntryCount(), xValue));
         values2.add(new Entry(chart.getData().getEntryCount(), yValue));
         values3.add(new Entry(chart.getData().getEntryCount(), zValue));
+        values4.add(new Entry(chart.getData().getEntryCount(), aValue));
+        values5.add(new Entry(chart.getData().getEntryCount(), bValue));
+        values6.add(new Entry(chart.getData().getEntryCount(), cValue));
         data = chart.getData();
         chart.getDescription().setEnabled(false);
         if (chart.getData() != null &&
@@ -291,9 +360,15 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             x = (LineDataSet) chart.getData().getDataSetByIndex(0);
             y = (LineDataSet) chart.getData().getDataSetByIndex(1);
             z = (LineDataSet) chart.getData().getDataSetByIndex(2);
+            a = (LineDataSet) chart.getData().getDataSetByIndex(3);
+            b = (LineDataSet) chart.getData().getDataSetByIndex(4);
+            c = (LineDataSet) chart.getData().getDataSetByIndex(5);
             x.setValues(values1);
             y.setValues(values2);
             z.setValues(values3);
+            a.setValues(values4);
+            b.setValues(values5);
+            c.setValues(values6);
             chart.getData().notifyDataChanged();
             chart.notifyDataSetChanged();
             // limit the number of visible entries
@@ -304,8 +379,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             chart.moveViewToX(chart.getData().getEntryCount());
         } else {
             // create a dataset and give it a type
-            x = new LineDataSet(values1, "x value");
-
+            x = new LineDataSet(values1, "acc_x_H");
             x.setAxisDependency(YAxis.AxisDependency.LEFT);
             x.setColor(ColorTemplate.getHoloBlue());
             x.setCircleColor(Color.TRANSPARENT);
@@ -315,13 +389,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             x.setFillColor(ColorTemplate.getHoloBlue());
             x.setHighLightColor(Color.rgb(244, 117, 117));
             x.setDrawCircleHole(false);
-            //x.setFillFormatter(new MyFillFormatter(0f));
-            //x.setDrawHorizontalHighlightIndicator(false);
-            //x.setVisible(false);
-            //x.setCircleHoleColor(Color.WHITE);
-
-            // create a dataset and give it a type
-            y = new LineDataSet(values2, "y value");
+            y = new LineDataSet(values2, "acc_x_L");
             y.setAxisDependency(YAxis.AxisDependency.RIGHT);
             y.setColor(Color.RED);
             y.setCircleColor(Color.TRANSPARENT);
@@ -331,9 +399,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             y.setFillColor(Color.RED);
             y.setDrawCircleHole(false);
             y.setHighLightColor(Color.rgb(244, 117, 117));
-            //y.setFillFormatter(new MyFillFormatter(900f));
-
-            z = new LineDataSet(values3, "z value");
+            z = new LineDataSet(values3, "acc_y_H");
             z.setAxisDependency(YAxis.AxisDependency.RIGHT);
             z.setColor(Color.YELLOW);
             z.setCircleColor(Color.TRANSPARENT);
@@ -344,8 +410,40 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             z.setDrawCircleHole(false);
             z.setHighLightColor(Color.rgb(244, 117, 117));
 
-            // create a data object with the data sets
-            LineData data = new LineData(x, y, z);
+            c = new LineDataSet(values3, "acc_y_L");
+            c.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            c.setColor(Color.GREEN);
+            c.setCircleColor(Color.TRANSPARENT);
+            c.setLineWidth(2f);
+            c.setCircleRadius(3f);
+            c.setFillAlpha(65);
+            c.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            c.setDrawCircleHole(false);
+            c.setHighLightColor(Color.rgb(244, 117, 117));
+
+            a = new LineDataSet(values3, "acc_z_H");
+            a.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            a.setColor(Color.WHITE);
+            a.setCircleColor(Color.TRANSPARENT);
+            a.setLineWidth(2f);
+            a.setCircleRadius(3f);
+            a.setFillAlpha(65);
+            a.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            a.setDrawCircleHole(false);
+            a.setHighLightColor(Color.rgb(244, 117, 117));
+            b = new LineDataSet(values3, "acc_z_L");
+            b.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            b.setColor(Color.BLUE);
+            b.setCircleColor(Color.TRANSPARENT);
+            b.setLineWidth(2f);
+            b.setCircleRadius(3f);
+            b.setFillAlpha(65);
+            b.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            b.setDrawCircleHole(false);
+            b.setHighLightColor(Color.rgb(244, 117, 117));
+
+
+            LineData data = new LineData(x, y, z, a, b, c);
             data.setValueTextColor(Color.TRANSPARENT);
             data.setValueTextSize(9f);
 
@@ -356,41 +454,168 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
 
     }
 
+    private void addEntry2(float xValue, float yValue, float zValue, float aValue, float bValue, float cValue) {
+
+        values1.add(new Entry(chart2.getData().getEntryCount(), xValue));
+        values2.add(new Entry(chart2.getData().getEntryCount(), yValue));
+        values3.add(new Entry(chart2.getData().getEntryCount(), zValue));
+        values4.add(new Entry(chart2.getData().getEntryCount(), aValue));
+        values5.add(new Entry(chart2.getData().getEntryCount(), bValue));
+        values6.add(new Entry(chart2.getData().getEntryCount(), cValue));
+        data = chart2.getData();
+        chart2.getDescription().setEnabled(false);
+        if (chart2.getData() != null &&
+                chart2.getData().getDataSetCount() > 0) {
+            x = (LineDataSet) chart2.getData().getDataSetByIndex(0);
+            y = (LineDataSet) chart2.getData().getDataSetByIndex(1);
+            z = (LineDataSet) chart2.getData().getDataSetByIndex(2);
+            a = (LineDataSet) chart2.getData().getDataSetByIndex(3);
+            b = (LineDataSet) chart2.getData().getDataSetByIndex(4);
+            c = (LineDataSet) chart2.getData().getDataSetByIndex(5);
+            x.setValues(values1);
+            y.setValues(values2);
+            z.setValues(values3);
+            a.setValues(values4);
+            b.setValues(values5);
+            c.setValues(values6);
+            chart2.getData().notifyDataChanged();
+            chart2.notifyDataSetChanged();
+            // limit the number of visible entries
+            chart2.setVisibleXRangeMaximum(120);
+            // chart.setVisibleYRange(30, AxisDependency.LEFT);
+
+            // move to the latest entry
+            chart2.moveViewToX(chart2.getData().getEntryCount());
+        } else {
+            // create a dataset and give it a type
+            x = new LineDataSet(values1, "gyr_x_H");
+            x.setAxisDependency(YAxis.AxisDependency.LEFT);
+            x.setColor(ColorTemplate.getHoloBlue());
+            x.setCircleColor(Color.TRANSPARENT);
+            x.setLineWidth(2f);
+            x.setCircleRadius(3f);
+            x.setFillAlpha(65);
+            x.setFillColor(ColorTemplate.getHoloBlue());
+            x.setHighLightColor(Color.rgb(244, 117, 117));
+            x.setDrawCircleHole(false);
+            y = new LineDataSet(values2, "gyr_x_L");
+            y.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            y.setColor(Color.RED);
+            y.setCircleColor(Color.TRANSPARENT);
+            y.setLineWidth(2f);
+            y.setCircleRadius(3f);
+            y.setFillAlpha(65);
+            y.setFillColor(Color.RED);
+            y.setDrawCircleHole(false);
+            y.setHighLightColor(Color.rgb(244, 117, 117));
+            z = new LineDataSet(values3, "gyr_y_H");
+            z.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            z.setColor(Color.YELLOW);
+            z.setCircleColor(Color.TRANSPARENT);
+            z.setLineWidth(2f);
+            z.setCircleRadius(3f);
+            z.setFillAlpha(65);
+            z.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            z.setDrawCircleHole(false);
+            z.setHighLightColor(Color.rgb(244, 117, 117));
+
+            c = new LineDataSet(values3, "gyr_y_L");
+            c.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            c.setColor(Color.GREEN);
+            c.setCircleColor(Color.TRANSPARENT);
+            c.setLineWidth(2f);
+            c.setCircleRadius(3f);
+            c.setFillAlpha(65);
+            c.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            c.setDrawCircleHole(false);
+            c.setHighLightColor(Color.rgb(244, 117, 117));
+
+            a = new LineDataSet(values3, "gyr_z_H");
+            a.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            a.setColor(Color.WHITE);
+            a.setCircleColor(Color.TRANSPARENT);
+            a.setLineWidth(2f);
+            a.setCircleRadius(3f);
+            a.setFillAlpha(65);
+            a.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            a.setDrawCircleHole(false);
+            a.setHighLightColor(Color.rgb(244, 117, 117));
+            b = new LineDataSet(values3, "gyr_z_L");
+            b.setAxisDependency(YAxis.AxisDependency.RIGHT);
+            b.setColor(Color.BLUE);
+            b.setCircleColor(Color.TRANSPARENT);
+            b.setLineWidth(2f);
+            b.setCircleRadius(3f);
+            b.setFillAlpha(65);
+            b.setFillColor(ColorTemplate.colorWithAlpha(Color.YELLOW, 200));
+            b.setDrawCircleHole(false);
+            b.setHighLightColor(Color.rgb(244, 117, 117));
+
+
+            LineData data = new LineData(x, y, z, a, b, c);
+            data.setValueTextColor(Color.TRANSPARENT);
+            data.setValueTextSize(9f);
+
+            // set data
+            chart2.setData(data);
+        }
+
+
+    }
 
     private Thread thread;
 
-    private void feedMultiple() {
+    /*    private void feedMultiple() {
 
-        if (thread != null)
-            thread.interrupt();
+            if (thread != null)
+                thread.interrupt();
 
-        final Runnable runnable = new Runnable() {
+            final Runnable runnable = new Runnable() {
 
-            @Override
-            public void run() {
-                addEntry(((float) (Math.random() * 40) + 30f), ((float) (Math.random() * 10) + 20f), ((float) (Math.random() * -2) + 10f));
-            }
-        };
+                @Override
+                public void run() {
+                    addEntry(((float) (Math.random() * 40) + 30f), ((float) (Math.random() * 10) + 20f), ((float) (Math.random() * -2) + 10f));
+                }
+            };
 
-        thread = new Thread(new Runnable() {
+            thread = new Thread(new Runnable() {
 
-            @Override
-            public void run() {
-                for (int i = 0; i < 1000; i++) {
+                @Override
+                public void run() {
+                    for (int i = 0; i < 1000; i++) {
 
-                    // Don't generate garbage runnables inside the loop.
-                    runOnUiThread(runnable);
+                        // Don't generate garbage runnables inside the loop.
+                        runOnUiThread(runnable);
 
-                    try {
-                        Thread.sleep(25);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        try {
+                            Thread.sleep(25);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        thread.start();
+            thread.start();
+        }*/
+    public static String random24numbers() {
+        final int min = 0;
+        final int max = 9;
+        StringBuilder randomStringBuilder = new StringBuilder();
+        char tempChar;
+        for (int i = 0; i < 25; i++) {
+            randomStringBuilder.append(String.valueOf(new Random().nextInt((max - min) + 1) + min));
+        }
+        return randomStringBuilder.toString();
     }
 
+    private static String[] splitToNChar(String text, int size) {
+        List<String> parts = new ArrayList<>();
+
+        int length = text.length();
+        for (int i = 0; i < length; i += size) {
+            parts.add(text.substring(i, Math.min(length, i + size)));
+        }
+        return parts.toArray(new String[0]);
+    }
 }
