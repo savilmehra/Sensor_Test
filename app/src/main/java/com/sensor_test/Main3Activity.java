@@ -385,7 +385,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             // create a dataset and give it a type
             x = new LineDataSet(values1, "acc_x_H");
             x.setAxisDependency(YAxis.AxisDependency.LEFT);
-            x.setColor(ColorTemplate.getHoloBlue());
+            x.setColor(Color.RED);
             x.setCircleColor(Color.TRANSPARENT);
             x.setLineWidth(2f);
             x.setCircleRadius(3f);
@@ -416,7 +416,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
 
             c = new LineDataSet(values3, "acc_y_L");
             c.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            c.setColor(Color.GREEN);
+            c.setColor(Color.YELLOW);
             c.setCircleColor(Color.TRANSPARENT);
             c.setLineWidth(2f);
             c.setCircleRadius(3f);
@@ -437,7 +437,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             a.setHighLightColor(Color.rgb(244, 117, 117));
             b = new LineDataSet(values3, "acc_z_L");
             b.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            b.setColor(Color.BLUE);
+            b.setColor(Color.WHITE);
             b.setCircleColor(Color.TRANSPARENT);
             b.setLineWidth(2f);
             b.setCircleRadius(3f);
@@ -494,7 +494,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             // create a dataset and give it a type
             x = new LineDataSet(values1, "gyr_x_H");
             x.setAxisDependency(YAxis.AxisDependency.LEFT);
-            x.setColor(ColorTemplate.getHoloBlue());
+            x.setColor(Color.RED);
             x.setCircleColor(Color.TRANSPARENT);
             x.setLineWidth(2f);
             x.setCircleRadius(3f);
@@ -525,7 +525,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
 
             c = new LineDataSet(values3, "gyr_y_L");
             c.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            c.setColor(Color.GREEN);
+            c.setColor(Color.YELLOW);
             c.setCircleColor(Color.TRANSPARENT);
             c.setLineWidth(2f);
             c.setCircleRadius(3f);
@@ -546,7 +546,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
             a.setHighLightColor(Color.rgb(244, 117, 117));
             b = new LineDataSet(values3, "gyr_z_L");
             b.setAxisDependency(YAxis.AxisDependency.RIGHT);
-            b.setColor(Color.BLUE);
+            b.setColor(Color.WHITE);
             b.setCircleColor(Color.TRANSPARENT);
             b.setLineWidth(2f);
             b.setCircleRadius(3f);
