@@ -160,6 +160,10 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
                 String stringExtra = intent.getStringExtra(MyService.VALUE);
                 Log.e(TAG, "brodcast" + stringExtra);
                 notify.setText(stringExtra);
+                String s = stringExtra;
+                String[] f = splitToNChar(s, 2);
+                addEntry((float) Float.valueOf(f[0]), (float) Float.valueOf(f[1]), (float) Float.valueOf(f[2]), (float) Float.valueOf(f[3]), (float) Float.valueOf(f[4]), (float) Float.valueOf(f[5]));
+                addEntry2((float) Float.valueOf(f[6]), (float) Float.valueOf(f[7]), (float) Float.valueOf(f[8]), (float) Float.valueOf(f[9]), (float) Float.valueOf(f[10]), (float) Float.valueOf(f[11]));
 
             }
         }
