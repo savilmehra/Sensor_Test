@@ -6,7 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
    >
-
+    <ImageView
+        android:id="@+id/IvDroid"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:visibility="gone"
+        android:src="@drawable/steeer"/>
     <Button
         android:id="@+id/scan"
         android:text="搜索"

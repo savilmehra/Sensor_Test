@@ -17,7 +17,7 @@
             android:name=".MyService"
             android:enabled="true"
             android:exported="true" />
-
+<activity android:name=".RotationActivty"/>
         <activity android:name=".Main3Activity" />
         <activity android:name=".MainActivity" >
             <intent-filter>

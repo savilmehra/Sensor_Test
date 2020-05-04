@@ -38,7 +38,7 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
     private LineChart chart, chart2;
     private MyService mBluetoothLeService;
     private String name, address;
-    private Button connectButton, newvalue;
+    private Button connectButton, newvalue,checkRotation;
     private Button sensorStatus;
     private TextView connectStatus;
     private boolean mConnect = false;
@@ -109,7 +109,14 @@ public class Main3Activity extends AppCompatActivity implements View.OnClickList
         sensorStatus.setOnClickListener(this);
         Intent gattServiceIntent = new Intent(this, MyService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-
+        checkRotation = findViewById(R.id.checkRotation);
+        checkRotation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main3Activity.this, RotationActivty.class);
+                startActivity(intent);
+            }
+        });
         chart = findViewById(R.id.chart1);
         chart2 = findViewById(R.id.chart2);
         setGraph();
